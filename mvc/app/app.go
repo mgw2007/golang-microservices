@@ -1,13 +1,21 @@
 package app
 
-import "net/http"
+import (
+	"log"
 
-import "github.com/mgw2007/golang-microservices/mvc/controllers"
+	"github.com/gin-gonic/gin"
+)
 
-import "log"
+var (
+	router *gin.Engine
+)
+
+func init() {
+	router = gin.Default()
+}
 
 // StartApp func its init point for runining the app
 func StartApp() {
-	http.HandleFunc("/users", controllers.GetUser)
-	log.Fatal(http.ListenAndServe(":5050", nil))
+	mapUrls()
+	log.Fatal(router.Run(":5050"))
 }

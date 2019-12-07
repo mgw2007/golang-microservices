@@ -1,21 +1,23 @@
 package controllers
 
 import (
-	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
 	"github.com/mgw2007/golang-microservices/mvc/domain"
 	"github.com/mgw2007/golang-microservices/mvc/services"
 	"github.com/mgw2007/golang-microservices/mvc/utils"
 )
 
 //GetUser for return users
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func GetUser(c *gin.Context) {
 	var err *utils.ApplicationError
 	var user *domain.User
+	log.Println(c.Params)
 
-	userID, userIDErr := strconv.ParseInt(r.URL.Query().Get("user_id"), 10, 64)
+	userID, userIDErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
 
 	if userIDErr != nil {
 		err = &utils.ApplicationError{
@@ -23,21 +25,15 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 			Code:       "user_id must be number",
 			StatusCode: http.StatusBadRequest,
 		}
-		jsonerr, _ := json.Marshal(err)
-		w.WriteHeader(err.StatusCode)
-		w.Write(jsonerr)
+		utils.RespondError(c, err)
 		return
 	}
-	user, userErr := services.GetUser(userID)
+	user, userErr := services.UsersService.GetUser(userID)
 	if userErr != nil {
-		jsonerr, _ := json.Marshal(userErr)
-		w.WriteHeader(userErr.StatusCode)
-		w.Write(jsonerr)
+		utils.RespondError(c, userErr)
 		return
 	}
 	// return user to client
-	jsonvalue, _ := json.Marshal(user)
-	w.Header().Set("content-type", "application/json")
-	w.Write(jsonvalue)
+	utils.Respond(c, http.StatusOK, user)
 
 }
