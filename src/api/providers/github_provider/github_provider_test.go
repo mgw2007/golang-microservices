@@ -99,22 +99,29 @@ func TestCreateRepo(t *testing.T) {
 			})),
 		},
 		{
-			name: "Test Create Repo Return valid json Error from repo ",
+			name: "Test Create Repo Return valid json Error from repo Invalid Token ",
 			args: args{
-				token: "",
+				token: "invalid token",
 				req: github.CreateRepoRequest{
 					Name: "valid request",
 				},
 			},
 			want: nil,
 			want1: &github.ErrorResponse{
-				StatusCode: http.StatusNotAcceptable,
+				StatusCode: http.StatusUnauthorized,
+				Message:    "Bad credentials",
 			},
 			server: httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 				// Send response to be tested
-				rw.WriteHeader(http.StatusNotAcceptable)
+				rw.WriteHeader(http.StatusUnauthorized)
 				rw.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(rw).Encode(struct{}{})
+				json.NewEncoder(rw).Encode(struct {
+					StatusCode int
+					Message    string
+				}{
+					StatusCode: http.StatusUnauthorized,
+					Message:    "Bad credentials",
+				})
 			})),
 		},
 		{
@@ -139,7 +146,7 @@ func TestCreateRepo(t *testing.T) {
 		{
 			name: "Test Create Repo SUCCESS Valid Request Valid response body",
 			args: args{
-				token: "",
+				token: "valid token",
 				req: github.CreateRepoRequest{
 					Name: "valid request",
 				},

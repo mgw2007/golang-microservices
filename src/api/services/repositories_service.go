@@ -1,7 +1,6 @@
 package services
 
 import (
-	"net/http"
 	"strings"
 
 	"github.com/mgw2007/golang-microservices/src/api/clients/restclient"
@@ -15,7 +14,7 @@ import (
 type repoService struct{}
 
 type repoServiceInterface interface {
-	CreateRepo(request repositories.CreateRepoRequest) (*repositories.CreateRepoResponse, errors.ApiError)
+	CreateRepo(APIClient restclient.APIClient, request repositories.CreateRepoRequest) (*repositories.CreateRepoResponse, errors.ApiError)
 }
 
 var (
@@ -27,7 +26,7 @@ func init() {
 	RepositoryService = &repoService{}
 }
 
-func (s *repoService) CreateRepo(input repositories.CreateRepoRequest) (*repositories.CreateRepoResponse, errors.ApiError) {
+func (s *repoService) CreateRepo(APIClient restclient.APIClient, input repositories.CreateRepoRequest) (*repositories.CreateRepoResponse, errors.ApiError) {
 	input.Name = strings.TrimSpace(input.Name)
 	if input.Name == "" {
 		return nil, errors.NewBadRequestError("Invalid Repository Name")
@@ -38,10 +37,7 @@ func (s *repoService) CreateRepo(input repositories.CreateRepoRequest) (*reposit
 		Description: input.Description,
 		Private:     false,
 	}
-	response, err := github_provider.CreateRepo(restclient.APIClient{
-		Client:  &http.Client{},
-		BaseURL: config.GetGithubRepoURL(),
-	}, config.GetGithubAccessToken(), request)
+	response, err := github_provider.CreateRepo(APIClient, config.GetGithubAccessToken(), request)
 	if err != nil {
 		return nil, errors.NewAPIError(err.StatusCode, err.Message)
 	}
