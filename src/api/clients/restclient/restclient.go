@@ -14,11 +14,11 @@ type APIClient struct {
 
 //Post for send post request
 func (api *APIClient) Post(body interface{}, headers http.Header) (*http.Response, error) {
-	bytesJSON, err := json.Marshal(body)
+	jsonBytes, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
-	request, err := http.NewRequest(http.MethodPost, api.BaseURL, bytes.NewReader(bytesJSON))
+	request, err := http.NewRequest(http.MethodPost, api.BaseURL, bytes.NewReader(jsonBytes))
 	request.Header = headers
 
 	client := api.Client

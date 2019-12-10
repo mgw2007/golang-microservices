@@ -17,7 +17,6 @@ import "io/ioutil"
 const (
 	headerAuthorization       = "Authorization"
 	headerAuthorizationFormat = "Token %s"
-	urlCreateRepo             = "https://api.github.com/user/repos"
 )
 
 func getAuthorizationHeader(token string) string {
