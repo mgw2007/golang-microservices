@@ -7,7 +7,7 @@ const (
 )
 
 var (
-	githubAccessToken = os.Getenv(apiGithubAccessToken) //169d7a3fa8cc9c9c6bd8e6bef1f8db0a6378d642
+	githubAccessToken = os.Getenv(apiGithubAccessToken)
 )
 
 //GetGithubAccessToken return token
