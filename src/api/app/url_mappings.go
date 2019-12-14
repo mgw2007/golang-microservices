@@ -13,8 +13,15 @@ import (
 
 func mapUrls() {
 	router.GET("/marco", polo.Marco)
-	router.POST("/repositories", func(c *gin.Context) {
+	router.POST("/repository", func(c *gin.Context) {
 		repositories.CreateRepo(restclient.APIClient{
+			Client:  &http.Client{},
+			BaseURL: config.GetGithubRepoURL(),
+		}, c)
+	})
+
+	router.POST("/repositories", func(c *gin.Context) {
+		repositories.CreateManyReposChan(restclient.APIClient{
 			Client:  &http.Client{},
 			BaseURL: config.GetGithubRepoURL(),
 		}, c)
